@@ -1,5 +1,26 @@
-class StructuredData {
-  constructor() {}
+export default class StructuredData {
+  private _data: object
+  originFormat: "csv" | "json" | "xml" | "yaml"
+
+  constructor(data: object, originFormat: "csv" | "json" | "xml" | "yaml") {
+    this._data = data
+    this.originFormat = originFormat
+  }
+
+  get data(): object {
+    switch (this.originFormat) {
+      case "csv":
+      case "xml":
+      case "yaml":
+        throw new TypeError("Format not supported")
+
+      case "json":
+        return this._data
+
+      default:
+        throw new TypeError("Unknown format")
+    }
+  }
 
   toCsv(): string {
     throw new Error("Function not implemented.")
@@ -17,19 +38,19 @@ class StructuredData {
     throw new Error("Function not implemented.")
   }
 
-  exportCsv(): Promise<void> {
+  async exportCsv(): Promise<void> {
     throw new Error("Function not implemented")
   }
 
-  exportJson(): Promise<void> {
+  async exportJson(): Promise<void> {
     throw new Error("Function not implemented")
   }
 
-  exportXml(): Promise<void> {
+  async exportXml(): Promise<void> {
     throw new Error("Function not implemented")
   }
 
-  exportYaml(): Promise<void> {
+  async exportYaml(): Promise<void> {
     throw new Error("Function not implemented")
   }
 }

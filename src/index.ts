@@ -1,6 +1,7 @@
-import csv from "./csv"
-import json from "./json"
-import xml from "./xml"
-import yaml from "./yaml"
+import csv from "./csv.js"
+import json from "./json.js"
+import xml from "./xml.js"
+import yaml from "./yaml.js"
+import StructuredData from "./StructuredData.js"
 
-export { csv, json, xml, yaml }
+export { csv, json, xml, yaml, StructuredData }
