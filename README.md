@@ -8,7 +8,6 @@
 > [!NOTE]
 > This project is currently maintained by a campus club, and we are prioritizing contributions from club members for existing issues. While we may not assign these issues to external contributors at the moment, you're still welcome to contribute by improving other areas or suggesting new ideas.
 
-
 What can you do with this library?
 
 - Load data in many formats from text or from a file (currently supports json, csv, xml, yaml)
