@@ -16,7 +16,7 @@ const parse = {
      * @returns StructuredData object with parsed content
      */
     from(text: string): StructuredData {
-        return parser.parseData(text);
+        return parser.parseString(text);
     },
     
     /**
@@ -25,7 +25,7 @@ const parse = {
      * @returns Promise resolving to StructuredData object
      */
     async loadFile(path: PathLike | FileHandle): Promise<StructuredData> {
-        return parser.parseData(path);
+        return parser.parseFile(path);
     }
 };
 export default parse;

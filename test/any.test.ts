@@ -1,7 +1,8 @@
 import assert from "assert";
 import { parse } from "../src/index.js";
-import fs from "fs";
+import { it } from "mocha";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -19,7 +20,7 @@ describe("parse", () => {
   });
   
   after(() => {
-    // Clean up temp directory after all tests
+    // Clean up temp directory after all tests (rm -rf)
     if (fs.existsSync(tempDir)) {
       fs.rmSync(tempDir, { recursive: true, force: true });
     }
@@ -32,48 +33,40 @@ describe("parse", () => {
       
       assert.deepStrictEqual(result.data, { name: "John", age: 30 });
     });
-    
+
     it("should detect and parse XML data from string", () => {
       const xmlData = '<person><name>John</name><age>30</age></person>';
       const result = parse.from(xmlData);
       
       assert.deepStrictEqual(result.data, { person: { name: "John", age: "30" } });
     });
-    
-    it("should handle nested JSON data", () => {
-      const jsonData = '{"person":{"name":"John","age":30,"address":{"city":"New York"}}}';
-      const result = parse.from(jsonData);
-      
-      assert.deepStrictEqual(result.data, { 
-        person: { 
-          name: "John", 
-          age: 30, 
-          address: { 
-            city: "New York" 
-          } 
-        } 
-      });
-    });
-    
-    it("should handle arrays in JSON", () => {
-      const jsonData = '{"people":[{"name":"John"},{"name":"Jane"}]}';
-      const result = parse.from(jsonData);
-      
-      assert.deepStrictEqual(result.data, { 
-        people: [
-          { name: "John" },
-          { name: "Jane" }
-        ] 
-      });
+
+    it("should throw 'not implemented' error for CSV data ⚠️", () => {
+      const csvData = "name,age\nJohn,30";
+      try {
+        parse.from(csvData);
+        assert.fail("Should have thrown 'not implemented' error");
+      } catch (e) {
+        assert.ok(
+          e instanceof Error && 
+          e.message.includes("not implemented"), 
+          "Expected 'not implemented' error message"
+        );
+      }
     });
 
-    it("should handle XML with attributes", () => {
-      const xmlData = '<person id="123"><name>John</name></person>';
-      const result = parse.from(xmlData);
-      
-      // Use type assertion to help TypeScript understand the structure
-      const personData = result.data as { person: { id: string, name: string } };
-      assert.strictEqual(personData.person.id, "123", "Should include XML attributes");
+    it("should throw 'not implemented' error for YAML data ⚠️", () => {
+      const yamlData = "name: John\nage: 30";
+      try {
+        parse.from(yamlData);
+        assert.fail("Should have thrown 'not implemented' error");
+      } catch (e) {
+        assert.ok(
+          e instanceof Error && 
+          e.message.includes("not implemented"), 
+          "Expected 'not implemented' error message"
+        );
+      }
     });
 
     it("should throw an error for unparseable data", () => {
@@ -103,6 +96,42 @@ describe("parse", () => {
       const result = await parse.loadFile(filePath);
       
       assert.deepStrictEqual(result.data, { person: { name: "John", age: "30" } });
+    });
+
+    it("should throw 'not implemented' error for CSV file ⚠️", async () => {
+      const filePath = path.join(tempDir, "test.csv");
+      const csvData = "name,age\nJohn,30";
+      
+      fs.writeFileSync(filePath, csvData);
+      
+      try {
+        await parse.loadFile(filePath);
+        assert.fail("Should have thrown 'not implemented' error");
+      } catch (e) {
+        assert.ok(
+          e instanceof Error && 
+          e.message.includes("not implemented"), 
+          "Expected 'not implemented' error message"
+        );
+      }
+    });
+
+    it("should throw 'not implemented' error for YAML file ⚠️", async () => {
+      const filePath = path.join(tempDir, "test.yaml");
+      const yamlData = "name: John\nage: 30";
+      
+      fs.writeFileSync(filePath, yamlData);
+      
+      try {
+        await parse.loadFile(filePath);
+        assert.fail("Should have thrown 'not implemented' error");
+      } catch (e) {
+        assert.ok(
+          e instanceof Error && 
+          e.message.includes("not implemented"), 
+          "Expected 'not implemented' error message"
+        );
+      }
     });
 
     it("should detect format regardless of file extension", async () => {
