@@ -5,7 +5,7 @@ import { detectFormat } from "./utils/detectFormat.js"
 import { csv, json, xml, yaml } from "./index.js"
 import fs from "fs"
 
-const parse = {
+const any = {
   // Parse data from a string (automatically detecting its format)
   from(text: string): StructuredData {
     // First predict the format
@@ -70,4 +70,4 @@ const parse = {
     return this.from(content)
   },
 }
-export default parse
+export default any

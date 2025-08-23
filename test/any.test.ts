@@ -1,5 +1,5 @@
 import assert from "assert"
-import { parse } from "../src/index.js"
+import { any } from "../src/index.js"
 import { it } from "mocha"
 import path from "path"
 import fs from "fs"
@@ -29,14 +29,14 @@ describe("parse", () => {
   describe("from", () => {
     it("should detect and parse JSON data from string", () => {
       const jsonData = '{"name":"John","age":30}'
-      const result = parse.from(jsonData)
+      const result = any.from(jsonData)
 
       assert.deepStrictEqual(result.data, { name: "John", age: 30 })
     })
 
     it("should detect and parse XML data from string", () => {
       const xmlData = "<person><name>John</name><age>30</age></person>"
-      const result = parse.from(xmlData)
+      const result = any.from(xmlData)
 
       assert.deepStrictEqual(result.data, { person: { name: "John", age: "30" } })
     })
@@ -44,7 +44,7 @@ describe("parse", () => {
     // it("should throw 'not implemented' error for CSV data ⚠️", () => {
     //   const csvData = "name,age\nJohn,30"
     //   try {
-    //     parse.from(csvData)
+    //     any.from(csvData)
     //     assert.fail("Should have thrown 'not implemented' error")
     //   } catch (e) {
     //     assert.ok(
@@ -57,7 +57,7 @@ describe("parse", () => {
     // it("should throw 'not implemented' error for YAML data ⚠️", () => {
     //   const yamlData = "name: John\nage: 30"
     //   try {
-    //     parse.from(yamlData)
+    //     any.from(yamlData)
     //     assert.fail("Should have thrown 'not implemented' error")
     //   } catch (e) {
     //     assert.ok(
@@ -69,7 +69,7 @@ describe("parse", () => {
 
     it("should throw an error for unparseable data", () => {
       const invalidData = "This is not valid in any supported format"
-      assert.throws(() => parse.from(invalidData), Error)
+      assert.throws(() => any.from(invalidData), Error)
     })
   })
 
@@ -80,7 +80,7 @@ describe("parse", () => {
 
       fs.writeFileSync(filePath, jsonData)
 
-      const result = await parse.loadFile(filePath)
+      const result = await any.loadFile(filePath)
 
       assert.deepStrictEqual(result.data, { name: "John", age: 30 })
     })
@@ -91,7 +91,7 @@ describe("parse", () => {
 
       fs.writeFileSync(filePath, xmlData)
 
-      const result = await parse.loadFile(filePath)
+      const result = await any.loadFile(filePath)
 
       assert.deepStrictEqual(result.data, { person: { name: "John", age: "30" } })
     })
@@ -103,7 +103,7 @@ describe("parse", () => {
     //   fs.writeFileSync(filePath, csvData)
 
     //   try {
-    //     await parse.loadFile(filePath)
+    //     await any.loadFile(filePath)
     //     assert.fail("Should have thrown 'not implemented' error")
     //   } catch (e) {
     //     assert.ok(
@@ -120,7 +120,7 @@ describe("parse", () => {
     //   fs.writeFileSync(filePath, yamlData)
 
     //   try {
-    //     await parse.loadFile(filePath)
+    //     await any.loadFile(filePath)
     //     assert.fail("Should have thrown 'not implemented' error")
     //   } catch (e) {
     //     assert.ok(
@@ -136,7 +136,7 @@ describe("parse", () => {
 
       fs.writeFileSync(filePath, jsonData)
 
-      const result = await parse.loadFile(filePath)
+      const result = await any.loadFile(filePath)
 
       assert.deepStrictEqual(result.data, { name: "John", age: 30 })
     })
@@ -148,25 +148,25 @@ describe("parse", () => {
       fs.writeFileSync(filePath, invalidData)
 
       await assert.rejects(async () => {
-        await parse.loadFile(filePath)
+        await any.loadFile(filePath)
       }, Error)
     })
   })
 
   describe("Edge cases", () => {
     it("should handle empty input", () => {
-      assert.throws(() => parse.from(""), Error)
+      assert.throws(() => any.from(""), Error)
     })
 
     it("should handle whitespace-only input", () => {
-      assert.throws(() => parse.from("   \n   "), Error)
+      assert.throws(() => any.from("   \n   "), Error)
     })
 
     it("should handle ambiguous formats", () => {
       // This string looks like XML but is actually valid JSON
       const ambiguousData = '{"tag": "<element>value</element>"}'
 
-      const result = parse.from(ambiguousData)
+      const result = any.from(ambiguousData)
       // Use type assertion to help TypeScript understand the structure
       const data = result.data as { tag: string }
       assert.strictEqual(data.tag, "<element>value</element>")
