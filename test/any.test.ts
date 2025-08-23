@@ -41,31 +41,31 @@ describe("parse", () => {
       assert.deepStrictEqual(result.data, { person: { name: "John", age: "30" } })
     })
 
-    it("should throw 'not implemented' error for CSV data ⚠️", () => {
-      const csvData = "name,age\nJohn,30"
-      try {
-        parse.from(csvData)
-        assert.fail("Should have thrown 'not implemented' error")
-      } catch (e) {
-        assert.ok(
-          e instanceof Error && e.message.includes("not implemented"),
-          "Expected 'not implemented' error message",
-        )
-      }
-    })
+    // it("should throw 'not implemented' error for CSV data ⚠️", () => {
+    //   const csvData = "name,age\nJohn,30"
+    //   try {
+    //     parse.from(csvData)
+    //     assert.fail("Should have thrown 'not implemented' error")
+    //   } catch (e) {
+    //     assert.ok(
+    //       e instanceof Error && e.message.includes("not implemented"),
+    //       "Expected 'not implemented' error message",
+    //     )
+    //   }
+    // })
 
-    it("should throw 'not implemented' error for YAML data ⚠️", () => {
-      const yamlData = "name: John\nage: 30"
-      try {
-        parse.from(yamlData)
-        assert.fail("Should have thrown 'not implemented' error")
-      } catch (e) {
-        assert.ok(
-          e instanceof Error && e.message.includes("not implemented"),
-          "Expected 'not implemented' error message",
-        )
-      }
-    })
+    // it("should throw 'not implemented' error for YAML data ⚠️", () => {
+    //   const yamlData = "name: John\nage: 30"
+    //   try {
+    //     parse.from(yamlData)
+    //     assert.fail("Should have thrown 'not implemented' error")
+    //   } catch (e) {
+    //     assert.ok(
+    //       e instanceof Error && e.message.includes("not implemented"),
+    //       "Expected 'not implemented' error message",
+    //     )
+    //   }
+    // })
 
     it("should throw an error for unparseable data", () => {
       const invalidData = "This is not valid in any supported format"
@@ -96,39 +96,39 @@ describe("parse", () => {
       assert.deepStrictEqual(result.data, { person: { name: "John", age: "30" } })
     })
 
-    it("should throw 'not implemented' error for CSV file ⚠️", async () => {
-      const filePath = path.join(tempDir, "test.csv")
-      const csvData = "name,age\nJohn,30"
+    // it("should throw 'not implemented' error for CSV file ⚠️", async () => {
+    //   const filePath = path.join(tempDir, "test.csv")
+    //   const csvData = "name,age\nJohn,30"
 
-      fs.writeFileSync(filePath, csvData)
+    //   fs.writeFileSync(filePath, csvData)
 
-      try {
-        await parse.loadFile(filePath)
-        assert.fail("Should have thrown 'not implemented' error")
-      } catch (e) {
-        assert.ok(
-          e instanceof Error && e.message.includes("not implemented"),
-          "Expected 'not implemented' error message",
-        )
-      }
-    })
+    //   try {
+    //     await parse.loadFile(filePath)
+    //     assert.fail("Should have thrown 'not implemented' error")
+    //   } catch (e) {
+    //     assert.ok(
+    //       e instanceof Error && e.message.includes("not implemented"),
+    //       "Expected 'not implemented' error message",
+    //     )
+    //   }
+    // })
 
-    it("should throw 'not implemented' error for YAML file ⚠️", async () => {
-      const filePath = path.join(tempDir, "test.yaml")
-      const yamlData = "name: John\nage: 30"
+    // it("should throw 'not implemented' error for YAML file ⚠️", async () => {
+    //   const filePath = path.join(tempDir, "test.yaml")
+    //   const yamlData = "name: John\nage: 30"
 
-      fs.writeFileSync(filePath, yamlData)
+    //   fs.writeFileSync(filePath, yamlData)
 
-      try {
-        await parse.loadFile(filePath)
-        assert.fail("Should have thrown 'not implemented' error")
-      } catch (e) {
-        assert.ok(
-          e instanceof Error && e.message.includes("not implemented"),
-          "Expected 'not implemented' error message",
-        )
-      }
-    })
+    //   try {
+    //     await parse.loadFile(filePath)
+    //     assert.fail("Should have thrown 'not implemented' error")
+    //   } catch (e) {
+    //     assert.ok(
+    //       e instanceof Error && e.message.includes("not implemented"),
+    //       "Expected 'not implemented' error message",
+    //     )
+    //   }
+    // })
 
     it("should detect format regardless of file extension", async () => {
       const filePath = path.join(tempDir, "test.txt")

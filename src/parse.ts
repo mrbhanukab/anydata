@@ -1,31 +1,73 @@
 import StructuredData from "./StructuredData.js"
 import { PathLike } from "fs"
-import { autoParser } from "./utils/autoParser.js"
 import { FileHandle } from "fs/promises"
-
-/**
- * Module for automatic format detection and parsing
- */
-
-const parser = new autoParser()
+import { detectFormat } from "./utils/detectFormat.js"
+import { csv, json, xml, yaml } from "./index.js"
+import fs from "fs"
 
 const parse = {
-  /**
-   * Parse data from a string, automatically detecting its format
-   * @param text The text to parse
-   * @returns StructuredData object with parsed content
-   */
+  // Parse data from a string (automatically detecting its format)
   from(text: string): StructuredData {
-    return parser.parseString(text)
+    // First predict the format
+    const predictedFormat = detectFormat(text)
+
+    // Try the predicted format first if available
+    if (predictedFormat) {
+      try {
+        switch (predictedFormat) {
+          case "json":
+            return json.from(text)
+          case "xml":
+            return xml.from(text)
+          case "csv":
+            return csv.from(text)
+          case "yaml":
+            return yaml.from(text)
+        }
+      } catch {}
+    }
+    // Try all formats if prediction failed or predicted format parser failed
+    const errors: Record<string, string> = {}
+
+    if (predictedFormat != "json") {
+      try {
+        return json.from(text)
+      } catch (e) {
+        errors.json = (e as Error).message
+      }
+    }
+
+    if (predictedFormat != "xml") {
+      try {
+        return xml.from(text)
+      } catch (e) {
+        errors.xml = (e as Error).message
+      }
+    }
+
+    if (predictedFormat != "csv") {
+      try {
+        return csv.from(text)
+      } catch (e) {
+        errors.csv = (e as Error).message
+      }
+    }
+
+    if (predictedFormat != "yaml") {
+      try {
+        return yaml.from(text)
+      } catch (e) {
+        errors.yaml = (e as Error).message
+      }
+    }
+
+    throw new Error(`Failed to parse data in any supported format: ${JSON.stringify(errors)}`)
   },
 
-  /**
-   * Load a file and parse its content, automatically detecting its format
-   * @param path Path to the file
-   * @returns Promise resolving to StructuredData object
-   */
+  // Load a file and parse its content, automatically (detecting its format)
   async loadFile(path: PathLike | FileHandle): Promise<StructuredData> {
-    return parser.parseFile(path)
+    const content = await fs.promises.readFile(path, "utf8")
+    return this.from(content)
   },
 }
 export default parse
