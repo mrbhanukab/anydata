@@ -61,20 +61,23 @@ const any = {
       }
     }
 
-    if (suppressErrors) return null;
+    if (suppressErrors) return null
     else throw new Error(`Failed to parse data in any supported format: ${JSON.stringify(errors)}`)
   },
 
   // Load a file and parse its content, automatically (detecting its format)
-  async loadFile(path: PathLike | FileHandle, suppressErrors: boolean = false): Promise<StructuredData | null> {
+  async loadFile(
+    path: PathLike | FileHandle,
+    suppressErrors: boolean = false,
+  ): Promise<StructuredData | null> {
     try {
       const content = await fs.promises.readFile(path, "utf8")
       return this.from(content, suppressErrors)
     } catch (e) {
-      if (suppressErrors) return null;
-      throw e;
+      if (suppressErrors) return null
+      throw e
     }
   },
-};
+}
 
-export default any;
+export default any

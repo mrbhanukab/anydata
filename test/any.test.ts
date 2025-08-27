@@ -110,7 +110,7 @@ describe("parse", () => {
 
     it("should return null for non-existent file when suppressErrors is true", async () => {
       const filePath = path.join(tempDir, "does-not-exist.json")
-      
+
       // Make sure the file doesn't exist
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath)
@@ -145,7 +145,7 @@ describe("parse", () => {
       const ambiguousData = '{"tag": "<element>value</element>"}'
 
       const result = any.from(ambiguousData)
-      
+
       const data = result!.data as { tag: string }
       assert.strictEqual(data.tag, "<element>value</element>")
     })
