@@ -7,7 +7,7 @@ import fs from "fs"
 
 const any = {
   // Parse data from a string (automatically detecting its format)
-  from(text: string): StructuredData {
+  from(text: string, suppressErrors: boolean = false): StructuredData | null {
     // First predict the format
     const predictedFormat = detectFormat(text)
 
@@ -61,13 +61,23 @@ const any = {
       }
     }
 
-    throw new Error(`Failed to parse data in any supported format: ${JSON.stringify(errors)}`)
+    if (suppressErrors) return null
+    else throw new Error(`Failed to parse data in any supported format: ${JSON.stringify(errors)}`)
   },
 
   // Load a file and parse its content, automatically (detecting its format)
-  async loadFile(path: PathLike | FileHandle): Promise<StructuredData> {
-    const content = await fs.promises.readFile(path, "utf8")
-    return this.from(content)
+  async loadFile(
+    path: PathLike | FileHandle,
+    suppressErrors: boolean = false,
+  ): Promise<StructuredData | null> {
+    try {
+      const content = await fs.promises.readFile(path, "utf8")
+      return this.from(content, suppressErrors)
+    } catch (e) {
+      if (suppressErrors) return null
+      throw e
+    }
   },
 }
+
 export default any

@@ -31,45 +31,25 @@ describe("parse", () => {
       const jsonData = '{"name":"John","age":30}'
       const result = any.from(jsonData)
 
-      assert.deepStrictEqual(result.data, { name: "John", age: 30 })
+      assert.deepStrictEqual(result!.data, { name: "John", age: 30 })
     })
 
     it("should detect and parse XML data from string", () => {
       const xmlData = "<person><name>John</name><age>30</age></person>"
       const result = any.from(xmlData)
 
-      assert.deepStrictEqual(result.data, { person: { name: "John", age: "30" } })
+      assert.deepStrictEqual(result!.data, { person: { name: "John", age: "30" } })
     })
-
-    // it("should throw 'not implemented' error for CSV data ⚠️", () => {
-    //   const csvData = "name,age\nJohn,30"
-    //   try {
-    //     any.from(csvData)
-    //     assert.fail("Should have thrown 'not implemented' error")
-    //   } catch (e) {
-    //     assert.ok(
-    //       e instanceof Error && e.message.includes("not implemented"),
-    //       "Expected 'not implemented' error message",
-    //     )
-    //   }
-    // })
-
-    // it("should throw 'not implemented' error for YAML data ⚠️", () => {
-    //   const yamlData = "name: John\nage: 30"
-    //   try {
-    //     any.from(yamlData)
-    //     assert.fail("Should have thrown 'not implemented' error")
-    //   } catch (e) {
-    //     assert.ok(
-    //       e instanceof Error && e.message.includes("not implemented"),
-    //       "Expected 'not implemented' error message",
-    //     )
-    //   }
-    // })
 
     it("should throw an error for unparseable data", () => {
       const invalidData = "This is not valid in any supported format"
       assert.throws(() => any.from(invalidData), Error)
+    })
+
+    it("should return null for unparseable data when suppressErrors is true", () => {
+      const invalidData = "This is not valid in any supported format"
+      const result = any.from(invalidData, true)
+      assert.strictEqual(result, null)
     })
   })
 
@@ -82,7 +62,7 @@ describe("parse", () => {
 
       const result = await any.loadFile(filePath)
 
-      assert.deepStrictEqual(result.data, { name: "John", age: 30 })
+      assert.deepStrictEqual(result!.data, { name: "John", age: 30 })
     })
 
     it("should detect and parse XML data from file", async () => {
@@ -93,42 +73,8 @@ describe("parse", () => {
 
       const result = await any.loadFile(filePath)
 
-      assert.deepStrictEqual(result.data, { person: { name: "John", age: "30" } })
+      assert.deepStrictEqual(result!.data, { person: { name: "John", age: "30" } })
     })
-
-    // it("should throw 'not implemented' error for CSV file ⚠️", async () => {
-    //   const filePath = path.join(tempDir, "test.csv")
-    //   const csvData = "name,age\nJohn,30"
-
-    //   fs.writeFileSync(filePath, csvData)
-
-    //   try {
-    //     await any.loadFile(filePath)
-    //     assert.fail("Should have thrown 'not implemented' error")
-    //   } catch (e) {
-    //     assert.ok(
-    //       e instanceof Error && e.message.includes("not implemented"),
-    //       "Expected 'not implemented' error message",
-    //     )
-    //   }
-    // })
-
-    // it("should throw 'not implemented' error for YAML file ⚠️", async () => {
-    //   const filePath = path.join(tempDir, "test.yaml")
-    //   const yamlData = "name: John\nage: 30"
-
-    //   fs.writeFileSync(filePath, yamlData)
-
-    //   try {
-    //     await any.loadFile(filePath)
-    //     assert.fail("Should have thrown 'not implemented' error")
-    //   } catch (e) {
-    //     assert.ok(
-    //       e instanceof Error && e.message.includes("not implemented"),
-    //       "Expected 'not implemented' error message",
-    //     )
-    //   }
-    // })
 
     it("should detect format regardless of file extension", async () => {
       const filePath = path.join(tempDir, "test.txt")
@@ -138,7 +84,7 @@ describe("parse", () => {
 
       const result = await any.loadFile(filePath)
 
-      assert.deepStrictEqual(result.data, { name: "John", age: 30 })
+      assert.deepStrictEqual(result!.data, { name: "John", age: 30 })
     })
 
     it("should throw an error for unparseable file", async () => {
@@ -151,6 +97,28 @@ describe("parse", () => {
         await any.loadFile(filePath)
       }, Error)
     })
+
+    it("should return null for unparseable file when suppressErrors is true", async () => {
+      const filePath = path.join(tempDir, "invalid.txt")
+      const invalidData = "This is not valid in any supported format"
+
+      fs.writeFileSync(filePath, invalidData)
+
+      const result = await any.loadFile(filePath, true)
+      assert.strictEqual(result, null)
+    })
+
+    it("should return null for non-existent file when suppressErrors is true", async () => {
+      const filePath = path.join(tempDir, "does-not-exist.json")
+
+      // Make sure the file doesn't exist
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath)
+      }
+
+      const result = await any.loadFile(filePath, true)
+      assert.strictEqual(result, null)
+    })
   })
 
   describe("Edge cases", () => {
@@ -158,8 +126,18 @@ describe("parse", () => {
       assert.throws(() => any.from(""), Error)
     })
 
+    it("should handle empty input with suppressErrors", () => {
+      const result = any.from("", true)
+      assert.strictEqual(result, null)
+    })
+
     it("should handle whitespace-only input", () => {
       assert.throws(() => any.from("   \n   "), Error)
+    })
+
+    it("should handle whitespace-only input with suppressErrors", () => {
+      const result = any.from("   \n   ", true)
+      assert.strictEqual(result, null)
     })
 
     it("should handle ambiguous formats", () => {
@@ -167,8 +145,8 @@ describe("parse", () => {
       const ambiguousData = '{"tag": "<element>value</element>"}'
 
       const result = any.from(ambiguousData)
-      // Use type assertion to help TypeScript understand the structure
-      const data = result.data as { tag: string }
+
+      const data = result!.data as { tag: string }
       assert.strictEqual(data.tag, "<element>value</element>")
     })
   })
