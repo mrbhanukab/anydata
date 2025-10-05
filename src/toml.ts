@@ -4,8 +4,8 @@ import StructuredData from "./StructuredData.js"
 
 // https://toml.io/en/v1.0.0
 
-const parseToml = (text: string): any => {
-  // TODO: Implement a full TOML parser
+const parseToml = (text: string): Record<string, unknown> => {
+  return {}
 }
 
 const toml: DataFormat = {
